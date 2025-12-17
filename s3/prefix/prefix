@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+aws s3 mb s3://joe-schmoe-prefix-example
+
+aws s3api put-object \
+       --bucket="joe-schmoe-prefix-example" \
+       --key="hey/"
