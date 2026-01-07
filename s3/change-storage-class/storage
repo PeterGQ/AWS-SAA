@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+aws s3 mb s3://joe-schmoe-storage-example
+
+echo "Hello World!" > hello.txt
+aws s3 cp hello.txt s3://joe-schmoe-storage-example --storage-class STANDARD_IA
