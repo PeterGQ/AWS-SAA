@@ -8,15 +8,54 @@ VPC_ID=$(aws ec2 create-vpc \
 --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=MyVPC}]' \
 --query 'Vpc.VpcId' \
 --output text)
-
 echo "Created VPC with ID: $VPC_ID"
+
+# Enable DNS support and hostnames
+
+aws ec2 modify-vpc-attribute \
+--vpc-id $VPC_ID \
+--enable-dns-hostnames "{\"Value\":true}"
 
 # Create an IGW
 
+IGW_ID=$(aws ec2 create-internet-gateway --query 'InternetGateway.InternetGatewayId' --output text)
+echo "Created Internet Gateway with ID: $IGW_ID"
+
 # attach the IGW 
+
+aws ec2 attach-internet-gateway --internet-gateway-id $IGW_ID --vpc-id $VPC_ID
 
 # Create Public Subnet
 
+Subnet_ID=$(aws ec2 create-subnet \
+--vpc-id $VPC_ID \
+--cidr-block "172.1.31.0/20" \
+--availability-zone us-east-1a \
+--query 'Subnet.SubnetId' \
+--output text)
+echo "Created Subnet with ID: $Subnet_ID"
+
+#Enable Auto-assign Public IP on Subnet because its private by default
+
+aws ec2 modify-subnet-attribute \
+--subnet-id $Subnet_ID \
+--map-public-ip-on-launch
+
+# Create Route Table for Public Subnet
+
+RT_ID=$(aws ec2 describe-route-tables \
+--filters "Name=vpc-id,Values=$VPC_ID" "Name=association.main,Values=true" \
+--query 'RouteTables[0].RouteTableId' \
+--output text)
+echo "Created Route Table with ID: $RT_ID"
+
 # Associate IGW with Public Subnet
+Association_ID=$(aws ec2 associate-route-table --route-table-id $RT_ID --subnet-id $Subnet_ID --query 'AssociationId' --output text)
+echo "Associated Route Table with Subnet: $Association_ID"
 
 # add Route to igw in Public Route Table
+
+aws ec2 create-route \
+--route-table-id $RT_ID \
+--destination-cidr-block 0.0.0.0/0 \
+--gateway-id $IGW_ID
