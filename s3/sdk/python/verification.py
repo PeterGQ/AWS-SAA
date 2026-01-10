@@ -18,7 +18,7 @@ def get_all_cognito_users(user_pool_id, region):
                 list_args['PaginationToken'] = next_token
 
             # Call Cognito API
-            response = client.list_users(**list_args)
+            response = client.list_users(**list_args) 
             
             for user in response.get('Users', []):
                 username = user.get('Username')
@@ -44,7 +44,7 @@ def get_all_cognito_users(user_pool_id, region):
     return users_list
 
 # --- Configuration ---
-USER_POOL_ID = 'us-east-1_fG0wseHvG'
+USER_POOL_ID = 'us-east-1_qbnhBDjBY'
 REGION = 'us-east-1'
 
 if __name__ == "__main__":
