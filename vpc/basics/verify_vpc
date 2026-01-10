@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# Verify the created resources
+echo aws ec2 describe-vpcs --vpc-ids $VPC_ID
+aws ec2 describe-vpcs --vpc-ids $VPC_ID
+echo aws ec2 describe-subnets --subnet-ids $SUBNET_ID   
+aws ec2 describe-subnets --subnet-ids $SUBNET_ID
+echo aws ec2 describe-route-tables --route-table-ids $RT_ID
+aws ec2 describe-route-tables --route-table-ids $RT_ID
+echo aws ec2 describe-internet-gateways --internet-gateway-ids $IGW_ID
+aws ec2 describe-internet-gateways --internet-gateway-ids $IGW_ID
